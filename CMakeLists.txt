@@ -17,9 +17,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum OS X deployment version" FORCE)
 
-project(CRYPT_SYNTH_PLUGIN VERSION 2.1.0)
+project(Crypt2SynthPlugin VERSION 2.1.0)
 
-#add_subdirectory(JUCE)
+# Enable compile commands export for IDEs
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 include(cmake/CPM.cmake)
 CPMAddPackage("gh:/juce-framework/JUCE#8.0.11")
 CPMAddPackage("gh:/free-audio/clap-juce-extensions#main")
@@ -34,7 +36,7 @@ if(UNIX AND NOT APPLE)
   list(APPEND JUCE_FORMATS LV2)
 endif()
 
-juce_add_plugin(Crypt2SynthPlugin
+juce_add_plugin(${PROJECT_NAME}
         VERSION 2.1.0                               # Set this if the plugin version is different to the project version
         ICON_BIG ${CMAKE_CURRENT_SOURCE_DIR}/resources/crypt-icon.png                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
         ICON_SMALL ${CMAKE_CURRENT_SOURCE_DIR}/resources/crypt-icon.png
@@ -58,17 +60,17 @@ juce_add_plugin(Crypt2SynthPlugin
 
 
 # ==================== CLAP =======================
-clap_juce_extensions_plugin(TARGET Crypt2SynthPlugin
+clap_juce_extensions_plugin(TARGET ${PROJECT_NAME}
       CLAP_ID "xyz.vitling.plugins.crypt2"
       CLAP_FEATURES instrument "virtual analog"
 )
 
-juce_generate_juce_header(Crypt2SynthPlugin)
+juce_generate_juce_header(${PROJECT_NAME})
 
-target_sources(Crypt2SynthPlugin PRIVATE
+target_sources(${PROJECT_NAME} PRIVATE
         src/CryptPlugin.cpp)
 
-target_compile_definitions(Crypt2SynthPlugin
+target_compile_definitions(${PROJECT_NAME}
         PUBLIC
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
@@ -79,11 +81,33 @@ target_compile_definitions(Crypt2SynthPlugin
         # JUCE_DISPLAY_SPLASH_SCREEN=0
 )
 
-juce_add_binary_data(Crypt2SynthPluginData SOURCES resources/Gothica-Book.ttf resources/bg.jpg resources/presets.xml resources/keyboard-icon.png)
-set_target_properties(Crypt2SynthPluginData PROPERTIES POSITION_INDEPENDENT_CODE ON)
+juce_add_binary_data(${PROJECT_NAME}Data SOURCES resources/Gothica-Book.ttf resources/bg.jpg resources/presets.xml resources/keyboard-icon.png)
+set_target_properties(${PROJECT_NAME}Data PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_link_libraries(Crypt2SynthPlugin PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
         Crypt2SynthPluginData
         juce::juce_audio_utils
         juce::juce_dsp)
+
+
+# ==================== Installation =======================
+include(GNUInstallDirs)
+
+# Install the standalone application
+if(TARGET ${PROJECT_NAME}_Standalone)
+  install(TARGETS ${PROJECT_NAME}_Standalone DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+
+# Install the native Juce plugins
+foreach(format VST3 LV2)
+  if(TARGET ${PROJECT_NAME}_${format})
+    get_target_property(output ${PROJECT_NAME}_${format} JUCE_PLUGIN_ARTEFACT_FILE)
+    install(DIRECTORY ${output} DESTINATION ${CMAKE_INSTALL_LIBDIR}/$<LOWER_CASE:${format}>)
+  endif()
+endforeach()
+
+# Install the CLAP plugin
+if(TARGET ${PROJECT_NAME}_CLAP)
+  install(TARGETS ${PROJECT_NAME}_CLAP DESTINATION ${CMAKE_INSTALL_LIBDIR}/clap)
+endif()
 
