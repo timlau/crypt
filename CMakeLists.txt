@@ -19,7 +19,9 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum OS X deployment vers
 
 project(CRYPT_SYNTH_PLUGIN VERSION 2.1.0)
 
-add_subdirectory(JUCE)
+#add_subdirectory(JUCE)
+include(cmake/CPM.cmake)
+CPMAddPackage("gh:/juce-framework/JUCE#8.0.11")
 
 juce_add_plugin(Crypt2SynthPlugin
         VERSION 2.1.0                               # Set this if the plugin version is different to the project version
@@ -56,7 +58,8 @@ target_compile_definitions(Crypt2SynthPlugin
 
         # We don't have to display the splash screen since we're using JUCE
         # under the GPL
-        JUCE_DISPLAY_SPLASH_SCREEN=0)
+        # JUCE_DISPLAY_SPLASH_SCREEN=0
+)
 
 juce_add_binary_data(Crypt2SynthPluginData SOURCES resources/Gothica-Book.ttf resources/bg.jpg resources/presets.xml resources/keyboard-icon.png)
 set_target_properties(Crypt2SynthPluginData PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -65,4 +68,4 @@ target_link_libraries(Crypt2SynthPlugin PRIVATE
         Crypt2SynthPluginData
         juce::juce_audio_utils
         juce::juce_dsp)
-        
+
