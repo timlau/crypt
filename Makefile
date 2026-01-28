@@ -1,9 +1,9 @@
 NAME = Crypt2
 BUILD_DIR = build
-BUILD_TYPE = Release
+	BUILD_TYPE ?= Release
 SETUP_OPTIONS = -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCRYPT_COPY_PLUGIN_AFTER_BUILD=OFF
 BUILD_OPTIONS = --config ${BUILD_TYPE} ${TARGET}
-BUILDROOT = BUILDROOT
+BUILDROOT = $(shell pwd)/BUILDROOT
 
 all: build
 
@@ -24,5 +24,10 @@ install: build
 	@echo "Installing ${NAME} to ${BUILDROOT}"
 	rm -rf ${BUILDROOT}
 	mkdir -p ${BUILDROOT}
-	cmake --install ${BUILD_DIR} --prefix ${BUILDROOT}
+	cmake --install ${BUILD_DIR} --prefix ${BUILDROOT}/usr/
 .PHONY: install
+
+run-stanalone:
+	@echo "Running standalone"
+	${BUILDROOT}/usr/bin/${NAME}
+.PHONY: run-stanalone
