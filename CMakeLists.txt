@@ -22,6 +22,10 @@ project(CRYPT_SYNTH_PLUGIN VERSION 2.1.0)
 #add_subdirectory(JUCE)
 include(cmake/CPM.cmake)
 CPMAddPackage("gh:/juce-framework/JUCE#8.0.11")
+CPMAddPackage("gh:/free-audio/clap-juce-extensions#main")
+#
+# Copy plugins after build option
+option(CRYPT_COPY_PLUGIN_AFTER_BUILD "Copy JUCE Plugins after built" ON)
 
 juce_add_plugin(Crypt2SynthPlugin
         VERSION 2.1.0                               # Set this if the plugin version is different to the project version
@@ -33,7 +37,7 @@ juce_add_plugin(Crypt2SynthPlugin
         NEEDS_MIDI_OUTPUT FALSE              # Does the plugin need midi output?
         IS_MIDI_EFFECT FALSE                 # Is this plugin a MIDI effect?
         EDITOR_WANTS_KEYBOARD_FOCUS FALSE    # Does the editor need keyboard focus?
-        COPY_PLUGIN_AFTER_BUILD TRUE        # Should the plugin be installed to a default location after building?
+        COPY_PLUGIN_AFTER_BUILD ${CRYPT_COPY_PLUGIN_AFTER_BUILD}        # Should the plugin be installed to a default location after building?
         PLUGIN_MANUFACTURER_CODE Vitl               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE Crp2                            # A unique four-character plugin id with at least one upper-case character
         DESCRIPTION "Hyper-Unison Synthesiser from Bow Church/Vitling"
@@ -44,6 +48,12 @@ juce_add_plugin(Crypt2SynthPlugin
         HARDENED_RUNTIME_ENABLED TRUE
         PRODUCT_NAME "Crypt2")        # The name of the final executable, which can differ from the target name
 
+
+# ==================== CLAP =======================
+clap_juce_extensions_plugin(TARGET Crypt2SynthPlugin
+      CLAP_ID "xyz.vitling.plugins.crypt2"
+      CLAP_FEATURES instrument "virtual analog"
+)
 
 juce_generate_juce_header(Crypt2SynthPlugin)
 
