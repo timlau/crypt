@@ -27,6 +27,13 @@ CPMAddPackage("gh:/free-audio/clap-juce-extensions#main")
 # Copy plugins after build option
 option(CRYPT_COPY_PLUGIN_AFTER_BUILD "Copy JUCE Plugins after built" ON)
 
+# ==================== Add Plugin =======================
+# Build LV2 only on Linux
+set(JUCE_FORMATS AU VST3 Standalone)
+if(UNIX AND NOT APPLE)
+  list(APPEND JUCE_FORMATS LV2)
+endif()
+
 juce_add_plugin(Crypt2SynthPlugin
         VERSION 2.1.0                               # Set this if the plugin version is different to the project version
         ICON_BIG ${CMAKE_CURRENT_SOURCE_DIR}/resources/crypt-icon.png                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
@@ -43,9 +50,10 @@ juce_add_plugin(Crypt2SynthPlugin
         DESCRIPTION "Hyper-Unison Synthesiser from Bow Church/Vitling"
         VST3_CATEGORIES "Instrument Synth Stereo"
         AU_MAIN_TYPE "kAudioUnitType_MusicDevice"
-        FORMATS VST3 AU Standalone                 # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        FORMATS ${JUCE_FORMATS}
         BUNDLE_ID "xyz.vitling.plugins.crypt2"
         HARDENED_RUNTIME_ENABLED TRUE
+        LV2URI "https://github.com/vitling/crypt"
         PRODUCT_NAME "Crypt2")        # The name of the final executable, which can differ from the target name
 
 
