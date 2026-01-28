@@ -17,7 +17,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum OS X deployment version" FORCE)
 
-project(Crypt2SynthPlugin VERSION 2.1.0)
+project(Crypt2 VERSION 2.1.0)
 
 # Enable compile commands export for IDEs
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -56,7 +56,7 @@ juce_add_plugin(${PROJECT_NAME}
         BUNDLE_ID "xyz.vitling.plugins.crypt2"
         HARDENED_RUNTIME_ENABLED TRUE
         LV2URI "https://github.com/vitling/crypt"
-        PRODUCT_NAME "Crypt2")        # The name of the final executable, which can differ from the target name
+        PRODUCT_NAME ${PROJECT_NAME})        # The name of the final executable, which can differ from the target name
 
 
 # ==================== CLAP =======================
@@ -85,7 +85,7 @@ juce_add_binary_data(${PROJECT_NAME}Data SOURCES resources/Gothica-Book.ttf reso
 set_target_properties(${PROJECT_NAME}Data PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        Crypt2SynthPluginData
+        ${PROJECT_NAME}Data
         juce::juce_audio_utils
         juce::juce_dsp)
 
@@ -110,4 +110,3 @@ endforeach()
 if(TARGET ${PROJECT_NAME}_CLAP)
   install(TARGETS ${PROJECT_NAME}_CLAP DESTINATION ${CMAKE_INSTALL_LIBDIR}/clap)
 endif()
-
