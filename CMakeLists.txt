@@ -23,7 +23,7 @@ project(Crypt2 VERSION 2.1.0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:/juce-framework/JUCE#8.0.11")
+CPMAddPackage("gh:/juce-framework/JUCE#8.0.12")
 CPMAddPackage("gh:/free-audio/clap-juce-extensions#main")
 #
 # Copy plugins after build option
